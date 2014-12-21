@@ -36,53 +36,40 @@ class MyServerProtocol(WebSocketServerProtocol):
 		else:
 			print("Text message received: {0}".format(payload.decode('utf8')) + " from " + str(self.transport.getPeer()))
 			
-			if requestType=="mapRequest":
-				city = decodelist[1]
-				message = DataManage.getCityData(city)
-				message2 = DataManage.getHotspots(city)
-				self.sendMessage("citydata>:>" + str(message), isBinary)
-				self.sendMessage("hotspotsare>:>" + str(message2), isBinary)
 			if requestType=="collegeBoardRequest":
 				city = decodelist[1]
-				message = DataManage.getCollegeBoard(city)
+				message = DataManage.getPostsByRegion(city)
 				self.sendMessage("collegeBoardData>:>" + str(message), isBinary)
+
 			if requestType=="login":
-				id = decodelist[1]
+				#id = decodelist[1]
 				gender = decodelist[2]
-				latitude = decodelist[3]
-				longitude = decodelist[4]
-				city = decodelist[5]
-				DataManage.addModDatabase(decodelist[1],latitude + " " + longitude,gender,city)
-				"""message = DataManage.getCityData(city)"""
-				message2 = DataManage.getHotspots(city)
-				"""self.sendMessage("citydata>:>" + str(message), isBinary)"""
-				self.sendMessage("hotspotsare>:>" + str(message2), isBinary)
-			if requestType=="RequestingNewID":
-				gender = decodelist[1]
-				latitude = decodelist[2]
-				longitude = decodelist[3]
-				city = decodelist[4]
-				message = DataManage.addNewID(gender,latitude + " " + longitude,city)
-				self.sendMessage("yourNewID>:>" + str(message))
-			if requestType=="locationis":
-				latitude = decodelist[1]
-				longitude = decodelist[2]
-				id = decodelist[3]
-				DataManage.updateLocation(latitude + " " + longitude, id)
+				#latitude = decodelist[3]
+				#longitude = decodelist[4]
+				region_id = decodelist[5]
+				user_id = DataManage.addUser(region_id, gender)
+				self.sendMessage("yourNewID>:>" + str(user_id))
+
+			# if requestType=="locationis":
+			# 	latitude = decodelist[1]
+			# 	longitude = decodelist[2]
+			# 	id = decodelist[3]
+			# 	DataManage.updateLocation(latitude + " " + longitude, id)
 				
-			if requestType=="sendCollegePost":
-				content = decodelist[1]
-				city = decodelist[2]
-				id = decodelist[3]
-				DataManage.addToGeneral(content, city, id)
-				message = DataManage.getCollegeBoard(city)
-				self.sendMessage("collegeBoardData>:>" + str(message), isBinary)
+			# if requestType=="sendCollegePost":
+			# 	content = decodelist[1]
+			# 	city = decodelist[2]
+			# 	id = decodelist[3]
+			# 	DataManage.addToGeneral(content, city, id)
+			# 	message = DataManage.getCollegeBoard(city)
+			# 	self.sendMessage("collegeBoardData>:>" + str(message), isBinary)
+
 			if requestType=="postToHopSpot":
 				content = decodelist[1]
 				city = decodelist[2]
 				id = decodelist[3]
 				hopspot = decodelist[4]
-				DataManage.addToHopSpot(content, hopspot, city, id)
+				DataManage.postToHopSpot(content, hopspot, city, id)
 				message = DataManage.getHopSpotBoard(city,hopspot)
 				self.sendMessage("hopSpotData>:>" + city + ">:>" + hopspot + ">:>" + str(message), isBinary)
 				
@@ -91,12 +78,6 @@ class MyServerProtocol(WebSocketServerProtocol):
 				hopspot = decodelist[2];
 				message = DataManage.getHopSpotBoard(city,hopspot)
 				self.sendMessage("hopSpotData>:>" + city + ">:>" + hopspot + ">:>" + str(message), isBinary)
-				
-				
-			if requestType=="displayHopSpots":
-				city = decodelist[1]
-				message = DataManage.getHotspots(city)
-				self.sendMessage("hopSpots>:>" + str(message), isBinary)
 			
 		#self.sendMessage(payload, isBinary)
 
